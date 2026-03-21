@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Arsenal — Inventario de Herramientas</title>
+<link rel="icon" href="icono ingeterm.png" type="image/png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&display=swap');
+:root{
+  --steel:#1a1d24;--steel2:#23272f;--steel3:#2d323c;
+  --stripe:#f5c518;--stripe2:#e6a800;
+  --bolt:#4a90d9;--text-main:#e8e4d8;--text-muted:#8a8a7a;
+  --container-bg:#191c22;--container-border:#3a4050;--tray-bg:#141619;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--steel);font-family:'Share Tech Mono',monospace;color:var(--text-main);min-height:100vh;overflow-x:hidden;width:100%;}
+html{overflow-x:hidden;}
+*{max-width:100%;}
+img{max-width:100%;height:auto;}
+#app{overflow-x:hidden;width:100%;}
+#containers-area{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+#tray-items{-webkit-overflow-scrolling:touch;}
+#topbar{overflow:hidden;}
+#app{min-height:100vh;position:relative;}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--steel);display:flex;align-items:center;justify-content:center;z-index:400;}
+#login-screen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,#ffffff03 40px,#ffffff03 41px),repeating-linear-gradient(90deg,transparent,transparent 40px,#ffffff03 40px,#ffffff03 41px);pointer-events:none;}
+.login-box{background:var(--steel2);border:2px solid var(--stripe);border-radius:4px;padding:36px 32px;width:340px;position:relative;z-index:1;}
+.login-box::before,.login-box::after{content:'◆';position:absolute;color:var(--stripe);font-size:10px;}
+.login-box::before{top:-6px;left:50%;transform:translateX(-50%);}
+.login-box::after{bottom:-6px;left:50%;transform:translateX(-50%);}
+.login-logo{text-align:center;margin-bottom:6px;font-size:36px;}
+.login-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:4px;color:var(--stripe);text-align:center;margin-bottom:4px;}
+.login-sub{font-size:9px;color:var(--text-muted);letter-spacing:2px;text-align:center;margin-bottom:28px;}
+.login-divider{height:1px;background:linear-gradient(90deg,transparent,var(--stripe),transparent);margin-bottom:24px;}
+.login-hazard{height:5px;background:repeating-linear-gradient(-45deg,var(--stripe) 0,var(--stripe) 8px,#111 8px,#111 16px);opacity:0.5;margin-bottom:20px;border-radius:1px;}
+.login-label{font-size:9px;color:var(--text-muted);letter-spacing:2px;display:block;margin-bottom:5px;}
+.login-input{width:100%;background:var(--container-bg);border:1px solid var(--container-border);border-bottom:2px solid var(--stripe);color:var(--text-main);font-family:'Share Tech Mono',monospace;font-size:13px;padding:9px 10px;margin-bottom:16px;outline:none;border-radius:2px;}
+.login-input:focus{border-color:var(--stripe);}
+.login-btn{width:100%;background:var(--stripe);color:#111;border:none;padding:11px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;cursor:pointer;border-radius:2px;margin-top:4px;}
+.login-btn:hover{background:var(--stripe2);}
+.login-error{font-size:10px;color:#e74c3c;letter-spacing:1px;text-align:center;margin-top:12px;min-height:16px;}
+
+/* TOPBAR */
+#topbar{background:var(--steel2);border-bottom:3px solid var(--stripe);padding:10px 12px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap;min-width:0;overflow:hidden;}
+#topbar h1{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--stripe);}
+.subtitle{font-size:11px;color:var(--text-muted);letter-spacing:1px;}
+@media(max-width:600px){
+  #topbar{padding:6px 10px;gap:5px;}
+  #topbar h1{font-size:15px;letter-spacing:1px;}
+  .subtitle{display:none;}
+  .rpg-btn{padding:4px 7px;font-size:8px;letter-spacing:0;}
+  .user-badge{font-size:8px;padding:2px 5px;letter-spacing:0;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #sync-status{font-size:8px;padding:2px 5px;letter-spacing:0;}
+  .coord-btns{gap:3px;}
+  .container-box{min-width:150px;}
+  .tool-card{width:62px;height:76px;}
+  .tool-icon{font-size:22px;}
+  .tool-card img{width:36px;height:36px;}
+}
+.spacer{flex:1;}
+.rpg-btn{background:var(--stripe);color:#111;border:none;padding:6px 14px;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;letter-spacing:1px;cursor:pointer;border-radius:2px;}
+.rpg-btn:hover{background:var(--stripe2);}
+.rpg-btn-dim{background:var(--steel3);color:var(--text-muted);border:1px solid var(--container-border);}
+.rpg-btn-dim:hover{color:var(--text-main);border-color:var(--stripe);}
+.user-badge{font-size:10px;color:var(--text-muted);letter-spacing:1px;border:1px solid var(--container-border);padding:4px 10px;border-radius:2px;}
+.user-badge span{color:var(--stripe);}
+#sync-status{font-size:9px;letter-spacing:1px;padding:3px 10px;border-radius:2px;border:1px solid;}
+.sync-ok{color:#4caf50;border-color:#4caf50;}
+.sync-err{color:#e74c3c;border-color:#e74c3c;}
+.sync-loading{color:var(--stripe);border-color:var(--stripe);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.coord-btns{display:flex;gap:8px;}
+
+/* Mobile action drawer */
+#action-drawer{
+  background:var(--steel2);
+  border-bottom:2px solid var(--stripe);
+  overflow:hidden;
+  max-height:0;
+  transition:max-height 0.3s ease, padding 0.3s ease;
+  padding:0 12px;
+}
+#action-drawer.open{
+  max-height:80px;
+  padding:10px 12px;
+}
+#action-drawer .drawer-inner{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+#menu-toggle{
+  display:none;
+  background:none;
+  border:none;
+  color:var(--stripe);
+  font-size:18px;
+  cursor:pointer;
+  padding:2px 4px;
+  line-height:1;
+  flex-shrink:0;
+}
+/* iPad vertical (601px - 900px) */
+@media(min-width:601px) and (max-width:900px){
+  #containers-area{
+    flex-wrap:wrap;
+    align-items:stretch;
+  }
+  .container-box{
+    flex:1 1 calc(50% - 12px);
+    max-width:calc(50% - 12px);
+    min-width:0;
+  }
+  .container-items{min-height:160px;}
+  .tool-card{width:76px;height:88px;}
+}
+
+/* iPad horizontal y desktop */
+@media(min-width:901px){
+  .container-box{min-width:200px;}
+}
+
+/* Mobile */
+@media(max-width:600px){
+  #topbar .coord-btns,
+  #topbar #btn-logout{display:none !important;}
+  #bottom-bar{padding:10px 12px;gap:8px;}
+  #containers-area{flex-wrap:nowrap;}
+  .container-box{min-width:150px;}
+  .tool-card{width:62px;height:76px;}
+  .tool-card img{width:36px;height:36px;}
+  .tool-icon{font-size:22px;}
+}
+
+/* LAYOUT */
+.hazard-stripe{height:6px;background:repeating-linear-gradient(-45deg,var(--stripe) 0,var(--stripe) 10px,#111 10px,#111 20px);opacity:0.4;}
+#workspace{display:flex;flex-direction:column;}
+#containers-area{flex:1;display:flex;gap:12px;padding:16px;overflow-x:auto;align-items:flex-start;min-width:0;box-sizing:border-box;}
+
+/* CONTAINERS */
+.container-box{
+  flex:1;min-width:190px;max-width:280px;
+  background:var(--container-bg);
+  border:2px solid var(--container-border);
+  border-top:4px solid var(--bolt);
+  border-radius:4px;
+  display:flex;flex-direction:column;min-height:340px;
+  transition:border-color 0.15s, box-shadow 0.15s, opacity 0.2s, transform 0.2s;
+}
+.container-box.drag-over-tool{
+  border-color:var(--stripe);border-top-color:var(--stripe);
+  box-shadow:0 0 16px #f5c51822;
+}
+/* El contenedor que se está arrastrando */
+.container-box.is-dragging{
+  opacity:0.35;
+  transform:scale(0.96) rotate(-1deg);
+  border-color:var(--stripe);
+  border-style:dashed;
+  box-shadow:0 0 0 2px var(--stripe);
+}
+/* El contenedor sobre el que se está sobrevolando */
+.container-box.drop-target{
+  border-color:var(--stripe);
+  border-style:dashed;
+  box-shadow:0 0 24px #f5c51840;
+  transform:scale(1.02);
+}
+/* Header arrastrable */
+.container-header{
+  padding:10px 12px 8px;
+  border-bottom:1px solid var(--container-border);
+  position:relative;
+  cursor:default;
+  transition:background 0.15s;
+  user-select:none;
+}
+.container-header.draggable-header{
+  cursor:grab;
+}
+.container-header.draggable-header:hover{
+  background:#1f2430;
+}
+.container-header.draggable-header:active{
+  cursor:grabbing;
+}
+/* Indicador de arrastre en el header */
+.drag-indicator{
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,transparent,var(--stripe),transparent);
+  opacity:0;
+  transition:opacity 0.2s;
+  border-radius:2px 2px 0 0;
+}
+.container-header.draggable-header:hover .drag-indicator{
+  opacity:1;
+}
+.drag-hint{
+  position:absolute;
+  top:8px;right:10px;
+  font-size:10px;
+  color:var(--text-muted);
+  opacity:0;
+  transition:opacity 0.2s;
+  letter-spacing:1px;
+}
+.container-header.draggable-header:hover .drag-hint{
+  opacity:0.6;
+}
+
+.bolt-deco{position:absolute;top:10px;right:32px;width:8px;height:8px;border-radius:50%;background:var(--container-border);}
+.container-team{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--stripe);}
+.container-location{font-size:10px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;}
+.container-edit-btn{background:none;border:1px solid var(--container-border);color:var(--text-muted);font-family:'Share Tech Mono',monospace;font-size:9px;padding:2px 6px;cursor:pointer;margin-top:6px;border-radius:2px;}
+.container-edit-btn:hover{color:var(--stripe);border-color:var(--stripe);}
+.container-items{flex:1;padding:10px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;min-height:200px;}
+.container-footer{padding:6px 12px;font-size:10px;color:var(--text-muted);border-top:1px solid var(--container-border);letter-spacing:1px;}
+
+/* TOOLS */
+.tool-card{width:72px;height:84px;background:var(--steel3);border:1px solid var(--container-border);border-radius:3px;padding:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:transform 0.1s,border-color 0.1s;user-select:none;position:relative;}
+.tool-card.draggable{cursor:grab;}
+.tool-card.draggable:hover{border-color:var(--stripe);transform:translateY(-2px);z-index:10;}
+.tool-card.draggable:active{cursor:grabbing;}
+.tool-card.dragging{opacity:0.35;transform:scale(0.9);}
+.tool-card.locked{cursor:default;opacity:0.65;}
+.lock-icon{position:absolute;top:3px;right:4px;font-size:9px;opacity:0.5;}
+.tool-icon{font-size:26px;line-height:1;}
+.tool-name{font-size:7px;color:var(--text-muted);text-align:center;max-width:66px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tool-qty{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--stripe);position:absolute;bottom:3px;right:5px;}
+
+/* TRAY */
+#tray-area{background:var(--tray-bg);border-top:3px solid var(--stripe);padding:10px 16px 12px;}
+#tray-label{font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:8px;}
+#tray-label span{color:var(--stripe);font-family:'Bebas Neue',sans-serif;font-size:13px;}
+#tray-items{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;min-height:96px;align-items:flex-start;}
+#tray-items::-webkit-scrollbar{height:3px;}
+#tray-items::-webkit-scrollbar-thumb{background:var(--stripe);}
+#tray-area.drag-over-tool{background:#1a1a10;border-top-color:#ffd700;}
+#status-bar{padding:4px 16px;font-size:9px;color:var(--text-muted);letter-spacing:1px;background:var(--steel2);border-top:1px solid var(--container-border);}
+
+/* Bottom action bar */
+#bottom-bar{
+  background:var(--steel2);
+  border-top:3px solid var(--stripe);
+  padding:10px 16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:nowrap;
+}
+#bottom-bar .spacer{flex:1;}
+@media(max-width:600px){
+  #bottom-bar{padding:8px 12px;gap:8px;}
+  #bottom-bar .rpg-btn{flex:1;text-align:center;padding:8px 4px;font-size:10px;}
+}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);display:flex;align-items:center;justify-content:center;z-index:300;}
+.modal{background:var(--steel2);border:2px solid var(--stripe);border-radius:4px;padding:22px;width:320px;font-family:'Share Tech Mono',monospace;max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--stripe);margin-bottom:14px;}
+.modal label{font-size:9px;color:var(--text-muted);letter-spacing:1px;display:block;margin-bottom:3px;}
+.modal input,.modal select{width:100%;background:var(--container-bg);border:1px solid var(--container-border);color:var(--text-main);font-family:'Share Tech Mono',monospace;font-size:12px;padding:6px 8px;border-radius:2px;margin-bottom:12px;outline:none;}
+.modal input:focus,.modal select:focus{border-color:var(--stripe);}
+.modal select option{background:#13121a;}
+.modal-btns{display:flex;gap:8px;margin-top:4px;}
+.modal-btns button{flex:1;padding:7px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;border:none;border-radius:2px;cursor:pointer;}
+.btn-confirm{background:var(--stripe);color:#111;font-weight:bold;}
+.btn-confirm:hover{background:var(--stripe2);}
+.btn-cancel{background:var(--steel3);color:var(--text-muted);border:1px solid var(--container-border)!important;}
+.btn-danger{background:#4a0a0a;color:#cc4444;border:1px solid #8b1a1a!important;}
+.icon-picker{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.icon-opt{font-size:20px;cursor:pointer;padding:4px;border:1px solid var(--container-border);background:var(--container-bg);width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:2px;}
+.icon-opt:hover,.icon-opt.selected{border-color:var(--stripe);}
+.qty-controls{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px;}
+.qty-btn{width:34px;height:34px;background:var(--steel3);border:1px solid var(--container-border);color:var(--text-main);font-size:18px;cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;}
+.qty-btn:hover{border-color:var(--stripe);color:var(--stripe);}
+.qty-display{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--stripe);min-width:48px;text-align:center;}
+.qty-track{height:3px;background:var(--container-border);margin-bottom:16px;position:relative;}
+.qty-fill{position:absolute;top:0;left:0;height:100%;background:var(--stripe);transition:width 0.15s;}
+.qty-info{font-size:10px;color:var(--text-muted);text-align:center;margin-bottom:14px;line-height:1.6;}
+.qty-info strong{color:var(--text-main);}
+.qty-info .dest{color:var(--stripe);}
+.qty-max{font-size:9px;color:var(--text-muted);text-align:center;margin-bottom:8px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="login-screen">
+    <div class="login-box">
+      <div class="login-logo"><img src="icono ingeterm.png" style="height:60px;width:auto;object-fit:contain;" onerror="this.style.display='none'"></div>
+      <div class="login-title">ARSENAL</div>
+      <div class="login-sub">SISTEMA DE INVENTARIO · ACCESO RESTRINGIDO</div>
+      <div class="login-divider"></div>
+      <div class="login-hazard"></div>
+      <label class="login-label">USUARIO</label>
+      <input class="login-input" id="l-user" placeholder="nombre de usuario" autocomplete="off">
+      <label class="login-label">CONTRASEÑA</label>
+      <input class="login-input" id="l-pass" placeholder="••••••••" type="password">
+      <button class="login-btn" onclick="doLogin()">INGRESAR AL ARSENAL</button>
+      <div class="login-error" id="login-error"></div>
+    </div>
+  </div>
+
+  <div id="main-app" style="display:none;">
+    <div id="topbar">
+      <img src="icono ingeterm.png" style="height:32px;width:auto;flex-shrink:0;object-fit:contain;" onerror="this.style.display='none'">
+      <h1>INVENTARIO</h1>
+      <div id="sync-status" class="sync-loading" style="flex-shrink:0;">EN LÍNEA</div>
+      <div class="spacer"></div>
+      <div id="user-badge" class="user-badge" style="flex-shrink:0;"></div>
+      <div id="coord-btns" class="coord-btns" style="display:none;flex-shrink:0;">
+        <button class="rpg-btn" onclick="openAddTool()">+ HERRAMIENTA</button>
+        <button class="rpg-btn rpg-btn-dim" onclick="openAddContainer()">+ CONTENEDOR</button>
+      </div>
+      
+      <button class="rpg-btn rpg-btn-dim" onclick="doLogout()" id="btn-logout">SALIR</button>
+      
+    </div>
+    <div id="action-drawer">
+      <div class="drawer-inner" id="drawer-inner">
+        
+        <button class="rpg-btn rpg-btn-dim" onclick="doLogout()">SALIR</button>
+      </div>
+    </div>
+    <div class="hazard-stripe"></div>
+    <div id="workspace">
+      <div id="containers-area"></div>
+      <div id="tray-area">
+        <div id="tray-label"><span>BODEGA</span> · herramientas sin asignar</div>
+        <div id="tray-items"></div>
+      </div>
+    </div>
+    <div id="status-bar">CARGANDO...</div>
+    <div id="bottom-bar">
+      <div id="bottom-coord-btns" style="display:none;gap:10px;display:none;flex:1;">
+        <button class="rpg-btn" onclick="openAddTool()" style="flex:1;">+ HERRAMIENTA</button>
+        <button class="rpg-btn rpg-btn-dim" onclick="openAddContainer()" style="flex:1;">+ CONTENEDOR</button>
+      </div>
+      <div class="spacer"></div>
+      <button class="rpg-btn rpg-btn-dim" onclick="doLogout()">SALIR</button>
+    </div>
+  </div>
+  <div id="modal-root"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const URL_ = 'https://viplezgsehdysopzcquq.supabase.co';
+const KEY_ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpcGxlemdzZWhkeXNvcHpjcXVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzQ2MTcsImV4cCI6MjA4OTYxMDYxN30.YIe_mw2dncLQGJTyatCi9i3O7lEJZlztqT9lQxILZHM';
+const ICONS = ['🔧','🔨','⚒️','🪛','🪚','🔩','🪝','⚙️','🔌','💡','📐','📏','🧲','🪜','🧰','⛏️','🪤','🔗','🗜️','🔑'];
+
+// Herramientas con imagen real — el nombre debe coincidir exactamente con el de Supabase
+const TOOL_IMAGES = {
+  'Martillo':  'herramientas/martillo.png',
+  'Taladro':   'herramientas/taladro.png',
+  'Soldadora': 'herramientas/soldadora.png',
+  'Uniforme':  'herramientas/uniforme.png',
+};
+
+function toolVisual(tool){
+  const src = TOOL_IMAGES[tool.name];
+  if(src){
+    return `<img src="${src}"
+      style="width:44px;height:44px;object-fit:contain;pointer-events:none;"
+      draggable="false"
+      onerror="this.style.display='none';this.nextSibling.style.display='block'">
+      <div style="display:none;font-size:26px;line-height:1;">${tool.icon}</div>`;
+  }
+  return `<div class="tool-icon">${tool.icon}</div>`;
+}
+const COLORS = ['#4a90d9','#e67e22','#27ae60','#9b59b6','#e74c3c','#1abc9c'];
+
+let sb, session = null;
+let state = {
+  containers:[], tools:[],
+  draggingTool:null, draggingContainerId:null,
+  _pendingTool:null, _pendingContainer:null
+};
+
+// ── LOGIN ──────────────────────────────────────────────
+async function doLogin(){
+  const user = document.getElementById('l-user').value.trim();
+  const pass = document.getElementById('l-pass').value.trim();
+  if(!user||!pass){ showLoginError('Completá todos los campos'); return; }
+  showLoginError('VERIFICANDO...');
+  try {
+    const {data,error} = await sb.from('usuarios').select('*').eq('nombre',user).eq('password',pass).single();
+    if(error||!data){ showLoginError('Usuario o contraseña incorrectos'); return; }
+    session = data;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    document.getElementById('user-badge').innerHTML = `<span>${session.nombre}</span> · ${session.rol.toUpperCase()}`;
+    if(isCoord()){
+      document.getElementById('coord-btns').style.display = 'flex';
+      document.getElementById('bottom-coord-btns').style.display = 'flex';
+    }
+    await loadAll();
+    sb.channel('herr-rt')
+      .on('postgres_changes',{event:'*',schema:'public',table:'herramientas'},()=>{
+        loadAll(); setStatus('SINCRONIZADO — CAMBIO DETECTADO DESDE OTRA SESIÓN');
+      }).subscribe();
+  } catch(e){ showLoginError('Error: '+e.message); }
+}
+
+function doLogout(){
+  session = null;
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('l-pass').value = '';
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('coord-btns').style.display = 'none';
+  document.getElementById('bottom-coord-btns').style.display = 'none';
+  closeDrawer();
+  state = { containers:[], tools:[], draggingTool:null, draggingContainerId:null };
+}
+
+
+function showLoginError(msg){ document.getElementById('login-error').textContent = msg; }
+document.addEventListener('keydown', e => {
+  if(e.key==='Enter' && document.getElementById('login-screen').style.display!=='none') doLogin();
+});
+
+// ── DATOS ─────────────────────────────────────────────
+async function loadAll(){
+  try {
+    setSyncStatus('loading','SINCRONIZANDO...');
+    const [{data:herr,error:e1},{data:users}] = await Promise.all([
+      sb.from('herramientas').select('*').order('nombre'),
+      sb.from('usuarios').select('equipo,orden').eq('rol','equipo').order('orden')
+    ]);
+    if(e1) throw e1;
+
+    const equiposOrdenados = (users||[]).map(u=>u.equipo).filter(Boolean);
+    const equiposExtra = [...new Set((herr||[]).map(h=>h.equipo).filter(Boolean))].filter(e=>!equiposOrdenados.includes(e));
+    const todosEquipos = [...equiposOrdenados, ...equiposExtra];
+
+    state.containers = todosEquipos.map(eq=>({
+      id:eq, team:eq,
+      location:(herr||[]).find(h=>h.equipo===eq)?.ubicacion||''
+    }));
+
+    const raw = (herr||[]).map(h=>({
+      id:h.id, name:h.nombre, icon:h.codigo||'🔧',
+      qty:1, estado:h.estado, containerId:h.equipo||null,
+      ubicacion:h.ubicacion, ids:[h.id]
+    }));
+    const grouped = [];
+    raw.forEach(t=>{
+      const ex = grouped.find(g=>g.name===t.name&&g.icon===t.icon&&g.containerId===t.containerId);
+      if(ex){ ex.qty++; ex.ids.push(t.id); }
+      else grouped.push({...t});
+    });
+    state.tools = grouped;
+    setSyncStatus('ok','EN LÍNEA');
+    render();
+    setStatus('DATOS CARGADOS — '+state.tools.length+' ÍTEMS · '+state.containers.length+' EQUIPOS');
+  } catch(e){
+    setSyncStatus('err','ERROR'); setStatus('ERROR AL CARGAR: '+e.message);
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────
+function render(){ renderContainers(); renderTray(); }
+function isCoord(){ return session?.rol==='coordinador'; }
+function myTeam(){ return session?.equipo||''; }
+function canDrag(tool){ return isCoord() || tool.containerId===myTeam() || !tool.containerId; }
+function canDropTo(cid){ return isCoord() || cid===myTeam() || cid===null; }
+
+function renderContainers(){
+  const area = document.getElementById('containers-area');
+  area.innerHTML = '';
+  state.containers.forEach((c,i)=>{
+    const tools = state.tools.filter(t=>t.containerId===c.id);
+    const totalQty = tools.reduce((s,t)=>s+t.qty,0);
+    const isMine = c.id===myTeam();
+    const div = document.createElement('div');
+    div.className = 'container-box';
+    div.style.borderTopColor = isMine?'var(--stripe)':COLORS[i%COLORS.length];
+    div.dataset.cid = c.id;
+
+    const editBtn = isCoord()?`<button class="container-edit-btn" onclick="openEditContainer('${c.id}')">EDITAR</button>`:'';
+    const dragIndicator = isCoord()?`<div class="drag-indicator"></div>`:'';
+    const dragHint = isCoord()?`<div class="drag-hint">⠿ MOVER</div>`:'';
+
+    div.innerHTML = `
+      <div class="container-header${isCoord()?' draggable-header':''}">
+        ${dragIndicator}
+        ${dragHint}
+        <div class="bolt-deco"></div>
+        <div class="container-team">${c.team}${isMine?' ★':''}</div>
+        <div class="container-location">${c.location}</div>
+        ${editBtn}
+      </div>
+      <div class="container-items" id="items-${eid(c.id)}"></div>
+      <div class="container-footer">${totalQty} UNIDAD${totalQty!==1?'ES':''}</div>`;
+
+    if(canDropTo(c.id)) setupToolDrop(div, c.id);
+    if(isCoord()) setupContainerDrag(div, c.id);
+
+    area.appendChild(div);
+    const slot = document.getElementById('items-'+eid(c.id));
+    tools.forEach(t=>slot.appendChild(makeToolCard(t)));
+  });
+}
+
+function renderTray(){
+  const tray = document.getElementById('tray-area');
+  const items = document.getElementById('tray-items');
+  const unassigned = state.tools.filter(t=>!t.containerId);
+  items.innerHTML='';
+  if(unassigned.length===0){
+    const e=document.createElement('div');
+    e.style.cssText='min-width:68px;height:84px;border:1px dashed var(--container-border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text-muted);letter-spacing:1px;';
+    e.textContent='VACÍO'; items.appendChild(e);
+  } else { unassigned.forEach(t=>items.appendChild(makeToolCard(t))); }
+  if(canDropTo(null)) setupToolDrop(tray,null);
+}
+
+// ── TOOL CARD ─────────────────────────────────────────
+function makeToolCard(tool){
+  const draggable = canDrag(tool);
+  const div = document.createElement('div');
+  div.className = 'tool-card '+(draggable?'draggable':'locked');
+  if(draggable) div.draggable = true;
+  div.innerHTML = `
+    ${!draggable?'<div class="lock-icon">🔒</div>':''}
+    ${toolVisual(tool)}
+    <div class="tool-name">${tool.name}</div>
+    <div class="tool-qty">×${tool.qty}</div>`;
+  if(draggable){
+    div.addEventListener('dragstart',e=>{
+      state.draggingTool=tool; state.draggingContainerId=null;
+      div.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';
+      e.dataTransfer.setData('dragtype','tool');
+      const hint=tool.qty>=3?'— ELEGIR CANTIDAD':tool.qty===2?'— MOVERÁ 1':'— 1 UNIDAD';
+      setStatus('MOVIENDO: '+tool.name.toUpperCase()+' '+hint);
+    });
+    div.addEventListener('dragend',()=>{
+      div.classList.remove('dragging'); state.draggingTool=null;
+      clearAllHighlights();
+    });
+  }
+  if(isCoord()) div.addEventListener('dblclick',()=>openEditTool(tool));
+  return div;
+}
+
+// ── TOOL DROP ─────────────────────────────────────────
+function setupToolDrop(el, containerId){
+  el.addEventListener('dragover',e=>{
+    if(state.draggingTool && !state.draggingContainerId){
+      e.preventDefault(); el.classList.add('drag-over-tool');
+    }
+  });
+  el.addEventListener('dragleave',e=>{
+    if(!el.contains(e.relatedTarget)) el.classList.remove('drag-over-tool');
+  });
+  el.addEventListener('drop',e=>{
+    el.classList.remove('drag-over-tool');
+    if(!state.draggingTool||state.draggingContainerId) return;
+    e.preventDefault(); e.stopPropagation();
+    const tool=state.draggingTool;
+    if(tool.containerId===containerId) return;
+    if(tool.qty>=3){ state._pendingTool=tool; openQtyDialog(tool,containerId); }
+    else doMove(tool,containerId,1);
+  });
+}
+
+// ── CONTAINER DRAG ────────────────────────────────────
+function setupContainerDrag(div, containerId){
+  const header = div.querySelector('.container-header');
+  if(!header) return;
+
+  // Hacer el header entero arrastrable
+  header.draggable = true;
+
+  header.addEventListener('dragstart', e=>{
+    // Evitar que se confunda con drag de herramientas
+    e.stopPropagation();
+    state.draggingContainerId = containerId;
+    state.draggingTool = null;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('dragtype','container');
+    // Animación: aplicar clase después de un tick para que el browser capture el snapshot primero
+    setTimeout(()=>{ div.classList.add('is-dragging'); }, 0);
+    setStatus('REORDENANDO CONTENEDOR: '+containerId.toUpperCase()+' — SOLTÁ SOBRE OTRO CONTENEDOR');
+  });
+
+  header.addEventListener('dragend', e=>{
+    div.classList.remove('is-dragging');
+    state.draggingContainerId = null;
+    clearAllHighlights();
+    setStatus('LISTO');
+  });
+
+  // El contenedor entero recibe el drop de otros contenedores
+  div.addEventListener('dragover', e=>{
+    if(!state.draggingContainerId || state.draggingContainerId===containerId) return;
+    e.preventDefault(); e.stopPropagation();
+    div.classList.add('drop-target');
+  });
+
+  div.addEventListener('dragleave', e=>{
+    if(!div.contains(e.relatedTarget)) div.classList.remove('drop-target');
+  });
+
+  div.addEventListener('drop', e=>{
+    div.classList.remove('drop-target');
+    if(!state.draggingContainerId || state.draggingContainerId===containerId) return;
+    e.preventDefault(); e.stopPropagation();
+    swapContainers(state.draggingContainerId, containerId);
+  });
+}
+
+function clearAllHighlights(){
+  document.querySelectorAll('.drag-over-tool,.drop-target,.is-dragging').forEach(el=>{
+    el.classList.remove('drag-over-tool','drop-target','is-dragging');
+  });
+}
+
+async function swapContainers(idA, idB){
+  const idxA = state.containers.findIndex(c=>c.id===idA);
+  const idxB = state.containers.findIndex(c=>c.id===idB);
+  if(idxA===-1||idxB===-1) return;
+  [state.containers[idxA], state.containers[idxB]] = [state.containers[idxB], state.containers[idxA]];
+  render();
+  setStatus('GUARDANDO NUEVO ORDEN...');
+  setSyncStatus('loading','GUARDANDO...');
+  try {
+    await Promise.all(
+      state.containers.map((c,i)=>
+        sb.from('usuarios').update({orden:i+1}).eq('equipo',c.id).eq('rol','equipo')
+      )
+    );
+    setSyncStatus('ok','EN LÍNEA');
+    setStatus('ORDEN ACTUALIZADO: '+idA.toUpperCase()+' ↔ '+idB.toUpperCase());
+  } catch(e){
+    setSyncStatus('err','ERROR'); setStatus('ERROR AL GUARDAR ORDEN: '+e.message);
+  }
+}
+
+// ── MOVE TOOL ─────────────────────────────────────────
+async function doMove(tool, destId, qty){
+  setSyncStatus('loading','GUARDANDO...');
+  try {
+    const idsToMove=(tool.ids||[tool.id]).slice(0,qty);
+    const destLoc = destId?(state.containers.find(c=>c.id===destId)?.location||destId):'Bodega';
+    const {error}=await sb.from('herramientas')
+      .update({equipo:destId||'',ubicacion:destLoc,
+               actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()})
+      .in('id',idsToMove);
+    if(error) throw error;
+    await loadAll();
+    setStatus(tool.name.toUpperCase()+' (×'+qty+') → '+(destId||'BODEGA').toUpperCase());
+  } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
+}
+
+// ── QTY DIALOG ────────────────────────────────────────
+function openQtyDialog(tool,destId){
+  const dest=destId||'Bodega'; const max=tool.qty;
+  window._qtyVal=1; window._qtyMax=max;
+  showModal(`
+    <h3>¿CUÁNTAS UNIDADES?</h3>
+    <div class="qty-info">${tool.icon} <strong>${tool.name}</strong><br>Destino: <span class="dest">${dest}</span></div>
+    <div class="qty-controls">
+      <button class="qty-btn" onclick="qtyStep(-1)">−</button>
+      <div class="qty-display" id="qty-d">1</div>
+      <button class="qty-btn" onclick="qtyStep(1)">+</button>
+    </div>
+    <div class="qty-max">de ${max} disponibles</div>
+    <div class="qty-track"><div class="qty-fill" id="qty-f" style="width:${Math.round(100/max)}%"></div></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">CANCELAR</button>
+      <button class="btn-confirm" onclick="confirmQtyMove('${destId||''}')">MOVER</button>
+    </div>`);
+}
+function qtyStep(d){
+  window._qtyVal=Math.min(window._qtyMax,Math.max(1,(window._qtyVal||1)+d));
+  document.getElementById('qty-d').textContent=window._qtyVal;
+  document.getElementById('qty-f').style.width=Math.round(window._qtyVal/window._qtyMax*100)+'%';
+}
+function confirmQtyMove(destId){
+  const tool=state._pendingTool||state.draggingTool;
+  closeModal(); if(tool) doMove(tool,destId||null,window._qtyVal||1);
+}
+
+// ── CRUD TOOLS ────────────────────────────────────────
+function openAddTool(){
+  if(!isCoord()) return;
+  showModal(`
+    <h3>+ NUEVA HERRAMIENTA</h3>
+    <label>NOMBRE</label><input id="m-name" placeholder="ej: Taladro Bosch">
+
+    <label>CANTIDAD</label><input id="m-qty" type="number" value="1" min="1">
+    <label>ESTADO</label>
+    <select id="m-estado"><option>Disponible</option><option>En uso</option><option>Mantenimiento</option><option>Perdida</option></select>
+    <label>ASIGNAR A EQUIPO</label>
+    <select id="m-equipo">
+      <option value="">— Sin asignar (Bodega) —</option>
+      ${state.containers.map(c=>`<option value="${c.id}">${c.team}</option>`).join('')}
+    </select>
+    <label>UBICACIÓN</label><input id="m-ubic" placeholder="ej: Depósito 2">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">CANCELAR</button>
+      <button class="btn-confirm" onclick="confirmAddTool()">AGREGAR</button>
+    </div>`);
+}
+function selIcon(el,icon){
+  document.querySelectorAll('.icon-opt').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected'); document.getElementById('m-icon').value=icon;
+}
+async function confirmAddTool(){
+  const name=document.getElementById('m-name').value.trim();
+  const icon = TOOL_IMAGES[name] ? name : '🔧';
+  const qty=parseInt(document.getElementById('m-qty').value)||1;
+  const estado=document.getElementById('m-estado').value;
+  const equipo=document.getElementById('m-equipo').value||'';
+  const ubic=document.getElementById('m-ubic').value.trim()||equipo||'Sin ubicación';
+  if(!name) return;
+  closeModal(); setSyncStatus('loading','GUARDANDO...');
+  try {
+    const rows=Array.from({length:qty},()=>({nombre:name,codigo:icon,equipo,ubicacion:ubic,estado,actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()}));
+    const {error}=await sb.from('herramientas').insert(rows);
+    if(error) throw error;
+    await loadAll(); setStatus(name.toUpperCase()+' (×'+qty+') AGREGADO');
+  } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
+}
+function openEditTool(tool){
+  if(!isCoord()) return;
+  state._pendingTool=tool;
+  showModal(`
+    <h3>EDITAR HERRAMIENTA</h3>
+    <label>NOMBRE</label><input id="m-name" value="${tool.name}">
+
+    <label>CANTIDAD</label>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <button class="qty-btn" onclick="editQtyStep(-1)" style="flex-shrink:0;">−</button>
+      <div style="flex:1;text-align:center;">
+        <div class="qty-display" id="edit-qty-d" style="font-size:24px;">${tool.qty}</div>
+      </div>
+      <button class="qty-btn" onclick="editQtyStep(1)" style="flex-shrink:0;">+</button>
+      <div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;">UNIDADES</div>
+    </div>
+    <label>ESTADO</label>
+    <select id="m-estado">${['Disponible','En uso','Mantenimiento','Perdida'].map(s=>`<option${s===tool.estado?' selected':''}>${s}</option>`).join('')}</select>
+    <label>UBICACIÓN</label><input id="m-ubic" value="${tool.ubicacion||''}">
+    <div class="modal-btns">
+      <button class="btn-danger" onclick="confirmDeleteTool()">ELIMINAR</button>
+      <button class="btn-cancel" onclick="closeModal()">CANCELAR</button>
+      <button class="btn-confirm" onclick="confirmEditTool()">GUARDAR</button>
+    </div>`);
+  window._editQty = tool.qty;
+  window._editQtyMin = 1;
+}
+
+function editQtyStep(d){
+  window._editQty = Math.max(window._editQtyMin, (window._editQty||1) + d);
+  document.getElementById('edit-qty-d').textContent = window._editQty;
+}
+
+async function confirmEditTool(){
+  const tool=state._pendingTool; if(!tool) return;
+  const name=document.getElementById('m-name').value.trim()||tool.name;
+  const icon = TOOL_IMAGES[name] ? name : (tool.icon||'🔧');
+  const estado=document.getElementById('m-estado').value;
+  const ubic=document.getElementById('m-ubic').value.trim();
+  const newQty = window._editQty || tool.qty;
+  const oldQty = tool.qty;
+  closeModal(); setSyncStatus('loading','GUARDANDO...');
+  try {
+    // 1. Actualizar los campos de todas las filas existentes
+    const {error}=await sb.from('herramientas')
+      .update({nombre:name,codigo:icon,estado,ubicacion:ubic,
+               actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()})
+      .in('id',tool.ids||[tool.id]);
+    if(error) throw error;
+
+    // 2. Si aumentó la cantidad, agregar filas nuevas
+    if(newQty > oldQty){
+      const extra = newQty - oldQty;
+      const rows = Array.from({length:extra},()=>({
+        nombre:name, codigo:icon,
+        equipo:tool.containerId||'', ubicacion:ubic,
+        estado, actualizado_por:session.nombre,
+        ultima_actualizacion:new Date().toISOString()
+      }));
+      const {error:e2}=await sb.from('herramientas').insert(rows);
+      if(e2) throw e2;
+    }
+
+    // 3. Si disminuyó, eliminar las filas sobrantes
+    if(newQty < oldQty){
+      const toDelete = (tool.ids||[tool.id]).slice(newQty);
+      const {error:e3}=await sb.from('herramientas').delete().in('id',toDelete);
+      if(e3) throw e3;
+    }
+
+    await loadAll();
+    setStatus(name.toUpperCase()+' ACTUALIZADO · CANTIDAD: ×'+newQty);
+  } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
+}
+async function confirmDeleteTool(){
+  const tool=state._pendingTool; if(!tool) return;
+  closeModal(); setSyncStatus('loading','ELIMINANDO...');
+  try {
+    const {error}=await sb.from('herramientas').delete().in('id',tool.ids||[tool.id]);
+    if(error) throw error;
+    await loadAll(); setStatus(tool.name.toUpperCase()+' ELIMINADO');
+  } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
+}
+
+// ── CRUD CONTAINERS ───────────────────────────────────
+function openAddContainer(){
+  if(!isCoord()) return;
+  showModal(`
+    <h3>+ NUEVO CONTENEDOR</h3>
+    <label>NOMBRE DEL EQUIPO</label><input id="m-team" placeholder="ej: Equipo D">
+    <label>UBICACIÓN</label><input id="m-loc" placeholder="ej: Obra Poniente">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">CANCELAR</button>
+      <button class="btn-confirm" onclick="confirmAddContainer()">CREAR</button>
+    </div>`);
+}
+async function confirmAddContainer(){
+  const team=document.getElementById('m-team').value.trim();
+  const loc=document.getElementById('m-loc').value.trim();
+  if(!team||!loc) return;
+  closeModal(); setSyncStatus('loading','CREANDO...');
+  try {
+    const {error}=await sb.from('herramientas').insert([{nombre:'(contenedor vacío)',codigo:'📦',equipo:team,ubicacion:loc,estado:'Disponible',actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()}]);
+    if(error) throw error;
+    await loadAll(); setStatus('CONTENEDOR "'+team.toUpperCase()+'" CREADO');
+  } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
+}
+function openEditContainer(id){
+  if(!isCoord()) return;
+  const c=state.containers.find(x=>x.id===id); if(!c) return;
+  state._pendingContainer=c;
+  showModal(`
+    <h3>EDITAR CONTENEDOR</h3>
+    <label>EQUIPO</label><input id="m-team" value="${c.team}">
+    <label>UBICACIÓN</label><input id="m-loc" value="${c.location}">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">CANCELAR</button>
+      <button class="btn-confirm" onclick="confirmEditContainer()">GUARDAR</button>
+    </div>`);
+}
+async function confirmEditContainer(){
+  const c=state._pendingContainer; if(!c) return;
+  const team=document.getElementById('m-team').value.trim()||c.team;
+  const loc=document.getElementById('m-loc').value.trim()||c.location;
+  closeModal(); setSyncStatus('loading','GUARDANDO...');
+  try {
+    const {error}=await sb.from('herramientas').update({equipo:team,ubicacion:loc,actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()}).eq('equipo',c.id);
+    if(error) throw error;
+    await loadAll(); setStatus('CONTENEDOR ACTUALIZADO');
+  } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
+}
+
+// ── UTILS ─────────────────────────────────────────────
+function eid(id){ return (id||'bodega').replace(/[^a-zA-Z0-9]/g,'_'); }
+function setSyncStatus(type,txt){
+  const el=document.getElementById('sync-status');
+  el.className=''; el.id='sync-status';
+  el.classList.add(type==='ok'?'sync-ok':type==='err'?'sync-err':'sync-loading');
+  el.textContent=txt;
+}
+function setStatus(msg){ document.getElementById('status-bar').textContent=msg.toUpperCase(); }
+function showModal(html){ document.getElementById('modal-root').innerHTML=`<div class="modal-overlay"><div class="modal">${html}</div></div>`; }
+function closeModal(){ document.getElementById('modal-root').innerHTML=''; }
+
+sb = supabase.createClient(URL_, KEY_);
+</script>
+</body>
+</html>
