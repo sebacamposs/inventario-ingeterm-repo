@@ -18,20 +18,18 @@ body{background:var(--steel);font-family:'Share Tech Mono',monospace;color:var(-
 html{overflow-x:hidden;}
 *{max-width:100%;}
 img{max-width:100%;height:auto;}
-#app{overflow-x:hidden;width:100%;}
+#app{overflow-x:hidden;width:100%;min-height:100vh;position:relative;}
 #containers-area{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 #tray-items{-webkit-overflow-scrolling:touch;}
 #topbar{overflow:hidden;}
-#app{min-height:100vh;position:relative;}
 
-/* LOGIN */
 #login-screen{position:fixed;inset:0;background:var(--steel);display:flex;align-items:center;justify-content:center;z-index:400;}
 #login-screen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,#ffffff03 40px,#ffffff03 41px),repeating-linear-gradient(90deg,transparent,transparent 40px,#ffffff03 40px,#ffffff03 41px);pointer-events:none;}
 .login-box{background:var(--steel2);border:2px solid var(--stripe);border-radius:4px;padding:36px 32px;width:340px;position:relative;z-index:1;}
 .login-box::before,.login-box::after{content:'◆';position:absolute;color:var(--stripe);font-size:10px;}
 .login-box::before{top:-6px;left:50%;transform:translateX(-50%);}
 .login-box::after{bottom:-6px;left:50%;transform:translateX(-50%);}
-.login-logo{text-align:center;margin-bottom:6px;font-size:36px;}
+.login-logo{text-align:center;margin-bottom:6px;}
 .login-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:4px;color:var(--stripe);text-align:center;margin-bottom:4px;}
 .login-sub{font-size:9px;color:var(--text-muted);letter-spacing:2px;text-align:center;margin-bottom:28px;}
 .login-divider{height:1px;background:linear-gradient(90deg,transparent,var(--stripe),transparent);margin-bottom:24px;}
@@ -43,23 +41,8 @@ img{max-width:100%;height:auto;}
 .login-btn:hover{background:var(--stripe2);}
 .login-error{font-size:10px;color:#e74c3c;letter-spacing:1px;text-align:center;margin-top:12px;min-height:16px;}
 
-/* TOPBAR */
-#topbar{background:var(--steel2);border-bottom:3px solid var(--stripe);padding:10px 12px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap;min-width:0;overflow:hidden;}
+#topbar{background:var(--steel2);border-bottom:3px solid var(--stripe);padding:10px 12px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap;min-width:0;}
 #topbar h1{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--stripe);}
-.subtitle{font-size:11px;color:var(--text-muted);letter-spacing:1px;}
-@media(max-width:600px){
-  #topbar{padding:6px 10px;gap:5px;}
-  #topbar h1{font-size:15px;letter-spacing:1px;}
-  .subtitle{display:none;}
-  .rpg-btn{padding:4px 7px;font-size:8px;letter-spacing:0;}
-  .user-badge{font-size:8px;padding:2px 5px;letter-spacing:0;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  #sync-status{font-size:8px;padding:2px 5px;letter-spacing:0;}
-  .coord-btns{gap:3px;}
-  .container-box{min-width:150px;}
-  .tool-card{width:62px;height:76px;}
-  .tool-icon{font-size:22px;}
-  .tool-card img{width:36px;height:36px;}
-}
 .spacer{flex:1;}
 .rpg-btn{background:var(--stripe);color:#111;border:none;padding:6px 14px;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;letter-spacing:1px;cursor:pointer;border-radius:2px;}
 .rpg-btn:hover{background:var(--stripe2);}
@@ -74,142 +57,49 @@ img{max-width:100%;height:auto;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.4;}}
 .coord-btns{display:flex;gap:8px;}
 
-/* Mobile action drawer */
-#action-drawer{
-  background:var(--steel2);
-  border-bottom:2px solid var(--stripe);
-  overflow:hidden;
-  max-height:0;
-  transition:max-height 0.3s ease, padding 0.3s ease;
-  padding:0 12px;
+#action-drawer{background:var(--steel2);border-bottom:2px solid var(--stripe);overflow:hidden;max-height:0;transition:max-height 0.3s ease,padding 0.3s ease;padding:0 12px;}
+#action-drawer.open{max-height:80px;padding:10px 12px;}
+#action-drawer .drawer-inner{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+@media(max-width:600px){
+  #topbar{padding:6px 10px;gap:5px;}
+  #topbar h1{font-size:15px;letter-spacing:1px;}
+  .rpg-btn{padding:4px 7px;font-size:8px;letter-spacing:0;}
+  .user-badge{font-size:8px;padding:2px 5px;letter-spacing:0;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #sync-status{font-size:8px;padding:2px 5px;letter-spacing:0;}
+  .coord-btns{gap:3px;}
+  .container-box{min-width:150px;}
+  .tool-card{width:62px;height:76px;}
+  .tool-icon{font-size:22px;}
+  .tool-card img{width:36px;height:36px;}
+  #topbar .coord-btns,#topbar #btn-logout{display:none !important;}
+  #bottom-bar{padding:10px 12px;gap:8px;}
+  #containers-area{flex-wrap:nowrap;}
 }
-#action-drawer.open{
-  max-height:80px;
-  padding:10px 12px;
-}
-#action-drawer .drawer-inner{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-wrap:wrap;
-}
-#menu-toggle{
-  display:none;
-  background:none;
-  border:none;
-  color:var(--stripe);
-  font-size:18px;
-  cursor:pointer;
-  padding:2px 4px;
-  line-height:1;
-  flex-shrink:0;
-}
-/* iPad vertical (601px - 900px) */
 @media(min-width:601px) and (max-width:900px){
-  #containers-area{
-    flex-wrap:wrap;
-    align-items:stretch;
-  }
-  .container-box{
-    flex:1 1 calc(50% - 12px);
-    max-width:calc(50% - 12px);
-    min-width:0;
-  }
+  #containers-area{flex-wrap:wrap;align-items:stretch;}
+  .container-box{flex:1 1 calc(50% - 12px);max-width:calc(50% - 12px);min-width:0;}
   .container-items{min-height:160px;}
   .tool-card{width:76px;height:88px;}
 }
+@media(min-width:901px){.container-box{min-width:200px;}}
 
-/* iPad horizontal y desktop */
-@media(min-width:901px){
-  .container-box{min-width:200px;}
-}
-
-/* Mobile */
-@media(max-width:600px){
-  #topbar .coord-btns,
-  #topbar #btn-logout{display:none !important;}
-  #bottom-bar{padding:10px 12px;gap:8px;}
-  #containers-area{flex-wrap:nowrap;}
-  .container-box{min-width:150px;}
-  .tool-card{width:62px;height:76px;}
-  .tool-card img{width:36px;height:36px;}
-  .tool-icon{font-size:22px;}
-}
-
-/* LAYOUT */
 .hazard-stripe{height:6px;background:repeating-linear-gradient(-45deg,var(--stripe) 0,var(--stripe) 10px,#111 10px,#111 20px);opacity:0.4;}
 #workspace{display:flex;flex-direction:column;}
 #containers-area{flex:1;display:flex;gap:12px;padding:16px;overflow-x:auto;align-items:flex-start;min-width:0;box-sizing:border-box;}
 
-/* CONTAINERS */
-.container-box{
-  flex:1;min-width:190px;max-width:280px;
-  background:var(--container-bg);
-  border:2px solid var(--container-border);
-  border-top:4px solid var(--bolt);
-  border-radius:4px;
-  display:flex;flex-direction:column;min-height:340px;
-  transition:border-color 0.15s, box-shadow 0.15s, opacity 0.2s, transform 0.2s;
-}
-.container-box.drag-over-tool{
-  border-color:var(--stripe);border-top-color:var(--stripe);
-  box-shadow:0 0 16px #f5c51822;
-}
-.container-box.is-dragging{
-  opacity:0.35;
-  transform:scale(0.96) rotate(-1deg);
-  border-color:var(--stripe);
-  border-style:dashed;
-  box-shadow:0 0 0 2px var(--stripe);
-}
-.container-box.drop-target{
-  border-color:var(--stripe);
-  border-style:dashed;
-  box-shadow:0 0 24px #f5c51840;
-  transform:scale(1.02);
-}
-.container-header{
-  padding:10px 12px 8px;
-  border-bottom:1px solid var(--container-border);
-  position:relative;
-  cursor:default;
-  transition:background 0.15s;
-  user-select:none;
-}
-.container-header.draggable-header{
-  cursor:grab;
-}
-.container-header.draggable-header:hover{
-  background:#1f2430;
-}
-.container-header.draggable-header:active{
-  cursor:grabbing;
-}
-.drag-indicator{
-  position:absolute;
-  top:0;left:0;right:0;
-  height:3px;
-  background:linear-gradient(90deg,transparent,var(--stripe),transparent);
-  opacity:0;
-  transition:opacity 0.2s;
-  border-radius:2px 2px 0 0;
-}
-.container-header.draggable-header:hover .drag-indicator{
-  opacity:1;
-}
-.drag-hint{
-  position:absolute;
-  top:8px;right:10px;
-  font-size:10px;
-  color:var(--text-muted);
-  opacity:0;
-  transition:opacity 0.2s;
-  letter-spacing:1px;
-}
-.container-header.draggable-header:hover .drag-hint{
-  opacity:0.6;
-}
-
+.container-box{flex:1;min-width:190px;max-width:280px;background:var(--container-bg);border:2px solid var(--container-border);border-top:4px solid var(--bolt);border-radius:4px;display:flex;flex-direction:column;min-height:340px;transition:border-color 0.15s,box-shadow 0.15s,opacity 0.2s,transform 0.2s;}
+.container-box.drag-over-tool{border-color:var(--stripe);border-top-color:var(--stripe);box-shadow:0 0 16px #f5c51822;}
+.container-box.is-dragging{opacity:0.35;transform:scale(0.96) rotate(-1deg);border-color:var(--stripe);border-style:dashed;box-shadow:0 0 0 2px var(--stripe);}
+.container-box.drop-target{border-color:var(--stripe);border-style:dashed;box-shadow:0 0 24px #f5c51840;transform:scale(1.02);}
+.container-header{padding:10px 12px 8px;border-bottom:1px solid var(--container-border);position:relative;cursor:default;transition:background 0.15s;user-select:none;}
+.container-header.draggable-header{cursor:grab;}
+.container-header.draggable-header:hover{background:#1f2430;}
+.container-header.draggable-header:active{cursor:grabbing;}
+.drag-indicator{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--stripe),transparent);opacity:0;transition:opacity 0.2s;border-radius:2px 2px 0 0;}
+.container-header.draggable-header:hover .drag-indicator{opacity:1;}
+.drag-hint{position:absolute;top:8px;right:10px;font-size:10px;color:var(--text-muted);opacity:0;transition:opacity 0.2s;letter-spacing:1px;}
+.container-header.draggable-header:hover .drag-hint{opacity:0.6;}
 .bolt-deco{position:absolute;top:10px;right:32px;width:8px;height:8px;border-radius:50%;background:var(--container-border);}
 .container-team{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--stripe);}
 .container-location{font-size:10px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;}
@@ -218,7 +108,6 @@ img{max-width:100%;height:auto;}
 .container-items{flex:1;padding:10px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;min-height:200px;}
 .container-footer{padding:6px 12px;font-size:10px;color:var(--text-muted);border-top:1px solid var(--container-border);letter-spacing:1px;}
 
-/* TOOLS */
 .tool-card{width:72px;height:84px;background:var(--steel3);border:1px solid var(--container-border);border-radius:3px;padding:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:transform 0.1s,border-color 0.1s;user-select:none;position:relative;}
 .tool-card.draggable{cursor:grab;}
 .tool-card.draggable:hover{border-color:var(--stripe);transform:translateY(-2px);z-index:10;}
@@ -230,7 +119,6 @@ img{max-width:100%;height:auto;}
 .tool-name{font-size:7px;color:var(--text-muted);text-align:center;max-width:66px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .tool-qty{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--stripe);position:absolute;bottom:3px;right:5px;}
 
-/* TRAY */
 #tray-area{background:var(--tray-bg);border-top:3px solid var(--stripe);padding:10px 16px 12px;}
 #tray-label{font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:8px;}
 #tray-label span{color:var(--stripe);font-family:'Bebas Neue',sans-serif;font-size:13px;}
@@ -240,23 +128,13 @@ img{max-width:100%;height:auto;}
 #tray-area.drag-over-tool{background:#1a1a10;border-top-color:#ffd700;}
 #status-bar{padding:4px 16px;font-size:9px;color:var(--text-muted);letter-spacing:1px;background:var(--steel2);border-top:1px solid var(--container-border);}
 
-/* Bottom action bar */
-#bottom-bar{
-  background:var(--steel2);
-  border-top:3px solid var(--stripe);
-  padding:10px 16px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:nowrap;
-}
+#bottom-bar{background:var(--steel2);border-top:3px solid var(--stripe);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:nowrap;}
 #bottom-bar .spacer{flex:1;}
 @media(max-width:600px){
   #bottom-bar{padding:8px 12px;gap:8px;}
   #bottom-bar .rpg-btn{flex:1;text-align:center;padding:8px 4px;font-size:10px;}
 }
 
-/* MODALS */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);display:flex;align-items:center;justify-content:center;z-index:300;}
 .modal{background:var(--steel2);border:2px solid var(--stripe);border-radius:4px;padding:22px;width:320px;font-family:'Share Tech Mono',monospace;max-height:90vh;overflow-y:auto;}
 .modal h3{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--stripe);margin-bottom:14px;}
@@ -270,9 +148,7 @@ img{max-width:100%;height:auto;}
 .btn-confirm:hover{background:var(--stripe2);}
 .btn-cancel{background:var(--steel3);color:var(--text-muted);border:1px solid var(--container-border)!important;}
 .btn-danger{background:#4a0a0a;color:#cc4444;border:1px solid #8b1a1a!important;}
-.icon-picker{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
-.icon-opt{font-size:20px;cursor:pointer;padding:4px;border:1px solid var(--container-border);background:var(--container-bg);width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:2px;}
-.icon-opt:hover,.icon-opt.selected{border-color:var(--stripe);}
+.modal-error{font-size:10px;color:#e74c3c;letter-spacing:1px;text-align:center;margin-top:10px;}
 .qty-controls{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px;}
 .qty-btn{width:34px;height:34px;background:var(--steel3);border:1px solid var(--container-border);color:var(--text-main);font-size:18px;cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;}
 .qty-btn:hover{border-color:var(--stripe);color:var(--stripe);}
@@ -302,7 +178,6 @@ img{max-width:100%;height:auto;}
       <div class="login-error" id="login-error"></div>
     </div>
   </div>
-
   <div id="main-app" style="display:none;">
     <div id="topbar">
       <img src="icono ingeterm.png" style="height:32px;width:auto;flex-shrink:0;object-fit:contain;" onerror="this.style.display='none'">
@@ -331,7 +206,7 @@ img{max-width:100%;height:auto;}
     </div>
     <div id="status-bar">CARGANDO...</div>
     <div id="bottom-bar">
-      <div id="bottom-coord-btns" style="display:none;gap:10px;display:none;flex:1;">
+      <div id="bottom-coord-btns" style="display:none;gap:10px;flex:1;">
         <button class="rpg-btn" onclick="openAddTool()" style="flex:1;">+ HERRAMIENTA</button>
         <button class="rpg-btn rpg-btn-dim" onclick="openAddContainer()" style="flex:1;">+ CONTENEDOR</button>
       </div>
@@ -341,12 +216,10 @@ img{max-width:100%;height:auto;}
   </div>
   <div id="modal-root"></div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 const URL_ = 'https://viplezgsehdysopzcquq.supabase.co';
 const KEY_ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpcGxlemdzZWhkeXNvcHpjcXVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzQ2MTcsImV4cCI6MjA4OTYxMDYxN30.YIe_mw2dncLQGJTyatCi9i3O7lEJZlztqT9lQxILZHM';
-const ICONS = ['🔧','🔨','⚒️','🪛','🪚','🔩','🪝','⚙️','🔌','💡','📐','📏','🧲','🪜','🧰','⛏️','🪤','🔗','🗜️','🔑'];
 
 const TOOL_IMAGES = {
   'Martillo':  'herramientas/martillo.png',
@@ -357,23 +230,13 @@ const TOOL_IMAGES = {
 
 function toolVisual(tool){
   const src = TOOL_IMAGES[tool.name];
-  if(src){
-    return `<img src="${src}"
-      style="width:44px;height:44px;object-fit:contain;pointer-events:none;"
-      draggable="false"
-      onerror="this.style.display='none';this.nextSibling.style.display='block'">
-      <div style="display:none;font-size:26px;line-height:1;">${tool.icon}</div>`;
-  }
-  return `<div class="tool-icon">${tool.icon}</div>`;
+  if(src) return `<img src="${src}" style="width:44px;height:44px;object-fit:contain;pointer-events:none;" draggable="false" onerror="this.style.display='none';this.nextSibling.style.display='block'"><div style="display:none;font-size:26px;line-height:1;">🔧</div>`;
+  return `<div class="tool-icon">🔧</div>`;
 }
-const COLORS = ['#4a90d9','#e67e22','#27ae60','#9b59b6','#e74c3c','#1abc9c'];
 
+const COLORS = ['#4a90d9','#e67e22','#27ae60','#9b59b6','#e74c3c','#1abc9c'];
 let sb, session = null;
-let state = {
-  containers:[], tools:[],
-  draggingTool:null, draggingContainerId:null,
-  _pendingTool:null, _pendingContainer:null
-};
+let state = { containers:[], tools:[], draggingTool:null, draggingContainerId:null, _pendingTool:null, _pendingContainer:null };
 
 // ── LOGIN ──────────────────────────────────────────────
 async function doLogin(){
@@ -393,10 +256,9 @@ async function doLogin(){
       document.getElementById('bottom-coord-btns').style.display = 'flex';
     }
     await loadAll();
-    sb.channel('herr-rt')
-      .on('postgres_changes',{event:'*',schema:'public',table:'herramientas'},()=>{
-        loadAll(); setStatus('SINCRONIZADO — CAMBIO DETECTADO DESDE OTRA SESIÓN');
-      }).subscribe();
+    sb.channel('herr-rt').on('postgres_changes',{event:'*',schema:'public',table:'herramientas'},()=>{
+      loadAll(); setStatus('SINCRONIZADO — CAMBIO DETECTADO DESDE OTRA SESIÓN');
+    }).subscribe();
   } catch(e){ showLoginError('Error: '+e.message); }
 }
 
@@ -421,29 +283,30 @@ document.addEventListener('keydown', e => {
 async function loadAll(){
   try {
     setSyncStatus('loading','SINCRONIZANDO...');
-    const [{data:herr,error:e1},{data:users}] = await Promise.all([
-      sb.from('herramientas').select('*').order('nombre'),
-      sb.from('usuarios').select('equipo,orden').eq('rol','equipo').order('orden')
+    const [{data:conts,error:e1},{data:herr,error:e2}] = await Promise.all([
+      sb.from('contenedores').select('*').order('orden'),
+      sb.from('herramientas').select('*').order('nombre')
     ]);
     if(e1) throw e1;
+    if(e2) throw e2;
 
-    const equiposOrdenados = (users||[]).map(u=>u.equipo).filter(Boolean);
-    const equiposExtra = [...new Set((herr||[]).map(h=>h.equipo).filter(Boolean))].filter(e=>!equiposOrdenados.includes(e));
-    const todosEquipos = [...equiposOrdenados, ...equiposExtra];
-
-    state.containers = todosEquipos.map(eq=>({
-      id:eq, team:eq,
-      location:(herr||[]).find(h=>h.equipo===eq)?.ubicacion||''
+    state.containers = (conts||[]).map(c=>({
+      id: c.nombre,
+      dbId: c.id,
+      team: c.nombre,
+      location: c.ubicacion||'',
+      orden: c.orden
     }));
 
-    const raw = (herr||[]).filter(h=>!h.es_placeholder).map(h=>({
-      id:h.id, name:h.nombre, icon:'🔧',
-      qty:1, estado:h.estado, containerId:h.equipo||null,
+    const raw = (herr||[]).map(h=>({
+      id:h.id, name:h.nombre,
+      qty:1, estado:h.estado,
+      containerId:h.equipo||null,
       ids:[h.id]
     }));
     const grouped = [];
     raw.forEach(t=>{
-      const ex = grouped.find(g=>g.name===t.name&&g.icon===t.icon&&g.containerId===t.containerId);
+      const ex = grouped.find(g=>g.name===t.name&&g.containerId===t.containerId);
       if(ex){ ex.qty++; ex.ids.push(t.id); }
       else grouped.push({...t});
     });
@@ -451,9 +314,7 @@ async function loadAll(){
     setSyncStatus('ok','EN LÍNEA');
     render();
     setStatus('DATOS CARGADOS — '+state.tools.length+' ÍTEMS · '+state.containers.length+' EQUIPOS');
-  } catch(e){
-    setSyncStatus('err','ERROR'); setStatus('ERROR AL CARGAR: '+e.message);
-  }
+  } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR AL CARGAR: '+e.message); }
 }
 
 // ── RENDER ────────────────────────────────────────────
@@ -474,15 +335,12 @@ function renderContainers(){
     div.className = 'container-box';
     div.style.borderTopColor = isMine?'var(--stripe)':COLORS[i%COLORS.length];
     div.dataset.cid = c.id;
-
     const editBtn = isCoord()?`<button class="container-edit-btn" onclick="openEditContainer('${c.id}')">EDITAR</button>`:'';
     const dragIndicator = isCoord()?`<div class="drag-indicator"></div>`:'';
     const dragHint = isCoord()?`<div class="drag-hint">⠿ MOVER</div>`:'';
-
     div.innerHTML = `
       <div class="container-header${isCoord()?' draggable-header':''}">
-        ${dragIndicator}
-        ${dragHint}
+        ${dragIndicator}${dragHint}
         <div class="bolt-deco"></div>
         <div class="container-team">${c.team}${isMine?' ★':''}</div>
         <div class="container-location">${c.location}</div>
@@ -490,10 +348,8 @@ function renderContainers(){
       </div>
       <div class="container-items" id="items-${eid(c.id)}"></div>
       <div class="container-footer">${totalQty} UNIDAD${totalQty!==1?'ES':''}</div>`;
-
     if(canDropTo(c.id)) setupToolDrop(div, c.id);
     if(isCoord()) setupContainerDrag(div, c.id);
-
     area.appendChild(div);
     const slot = document.getElementById('items-'+eid(c.id));
     tools.forEach(t=>slot.appendChild(makeToolCard(t)));
@@ -533,10 +389,7 @@ function makeToolCard(tool){
       const hint=tool.qty>=3?'— ELEGIR CANTIDAD':tool.qty===2?'— MOVERÁ 1':'— 1 UNIDAD';
       setStatus('MOVIENDO: '+tool.name.toUpperCase()+' '+hint);
     });
-    div.addEventListener('dragend',()=>{
-      div.classList.remove('dragging'); state.draggingTool=null;
-      clearAllHighlights();
-    });
+    div.addEventListener('dragend',()=>{ div.classList.remove('dragging'); state.draggingTool=null; clearAllHighlights(); });
   }
   if(isCoord()) div.addEventListener('dblclick',()=>openEditTool(tool));
   return div;
@@ -544,14 +397,8 @@ function makeToolCard(tool){
 
 // ── TOOL DROP ─────────────────────────────────────────
 function setupToolDrop(el, containerId){
-  el.addEventListener('dragover',e=>{
-    if(state.draggingTool && !state.draggingContainerId){
-      e.preventDefault(); el.classList.add('drag-over-tool');
-    }
-  });
-  el.addEventListener('dragleave',e=>{
-    if(!el.contains(e.relatedTarget)) el.classList.remove('drag-over-tool');
-  });
+  el.addEventListener('dragover',e=>{ if(state.draggingTool&&!state.draggingContainerId){ e.preventDefault(); el.classList.add('drag-over-tool'); } });
+  el.addEventListener('dragleave',e=>{ if(!el.contains(e.relatedTarget)) el.classList.remove('drag-over-tool'); });
   el.addEventListener('drop',e=>{
     el.classList.remove('drag-over-tool');
     if(!state.draggingTool||state.draggingContainerId) return;
@@ -567,48 +414,28 @@ function setupToolDrop(el, containerId){
 function setupContainerDrag(div, containerId){
   const header = div.querySelector('.container-header');
   if(!header) return;
-
   header.draggable = true;
-
   header.addEventListener('dragstart', e=>{
     e.stopPropagation();
-    state.draggingContainerId = containerId;
-    state.draggingTool = null;
+    state.draggingContainerId = containerId; state.draggingTool = null;
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('dragtype','container');
     setTimeout(()=>{ div.classList.add('is-dragging'); }, 0);
-    setStatus('REORDENANDO CONTENEDOR: '+containerId.toUpperCase()+' — SOLTÁ SOBRE OTRO CONTENEDOR');
+    setStatus('REORDENANDO: '+containerId.toUpperCase());
   });
-
-  header.addEventListener('dragend', e=>{
-    div.classList.remove('is-dragging');
-    state.draggingContainerId = null;
-    clearAllHighlights();
-    setStatus('LISTO');
-  });
-
-  div.addEventListener('dragover', e=>{
-    if(!state.draggingContainerId || state.draggingContainerId===containerId) return;
-    e.preventDefault(); e.stopPropagation();
-    div.classList.add('drop-target');
-  });
-
-  div.addEventListener('dragleave', e=>{
-    if(!div.contains(e.relatedTarget)) div.classList.remove('drop-target');
-  });
-
+  header.addEventListener('dragend', e=>{ div.classList.remove('is-dragging'); state.draggingContainerId = null; clearAllHighlights(); setStatus('LISTO'); });
+  div.addEventListener('dragover', e=>{ if(!state.draggingContainerId||state.draggingContainerId===containerId) return; e.preventDefault(); e.stopPropagation(); div.classList.add('drop-target'); });
+  div.addEventListener('dragleave', e=>{ if(!div.contains(e.relatedTarget)) div.classList.remove('drop-target'); });
   div.addEventListener('drop', e=>{
     div.classList.remove('drop-target');
-    if(!state.draggingContainerId || state.draggingContainerId===containerId) return;
+    if(!state.draggingContainerId||state.draggingContainerId===containerId) return;
     e.preventDefault(); e.stopPropagation();
     swapContainers(state.draggingContainerId, containerId);
   });
 }
 
 function clearAllHighlights(){
-  document.querySelectorAll('.drag-over-tool,.drop-target,.is-dragging').forEach(el=>{
-    el.classList.remove('drag-over-tool','drop-target','is-dragging');
-  });
+  document.querySelectorAll('.drag-over-tool,.drop-target,.is-dragging').forEach(el=>{ el.classList.remove('drag-over-tool','drop-target','is-dragging'); });
 }
 
 async function swapContainers(idA, idB){
@@ -616,20 +443,13 @@ async function swapContainers(idA, idB){
   const idxB = state.containers.findIndex(c=>c.id===idB);
   if(idxA===-1||idxB===-1) return;
   [state.containers[idxA], state.containers[idxB]] = [state.containers[idxB], state.containers[idxA]];
-  render();
-  setStatus('GUARDANDO NUEVO ORDEN...');
-  setSyncStatus('loading','GUARDANDO...');
+  render(); setStatus('GUARDANDO NUEVO ORDEN...'); setSyncStatus('loading','GUARDANDO...');
   try {
-    await Promise.all(
-      state.containers.map((c,i)=>
-        sb.from('usuarios').update({orden:i+1}).eq('equipo',c.id).eq('rol','equipo')
-      )
-    );
-    setSyncStatus('ok','EN LÍNEA');
-    setStatus('ORDEN ACTUALIZADO: '+idA.toUpperCase()+' ↔ '+idB.toUpperCase());
-  } catch(e){
-    setSyncStatus('err','ERROR'); setStatus('ERROR AL GUARDAR ORDEN: '+e.message);
-  }
+    await Promise.all(state.containers.map((c,i)=>
+      sb.from('contenedores').update({orden:i+1}).eq('id',c.dbId)
+    ));
+    setSyncStatus('ok','EN LÍNEA'); setStatus('ORDEN ACTUALIZADO');
+  } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
 }
 
 // ── MOVE TOOL ─────────────────────────────────────────
@@ -638,9 +458,7 @@ async function doMove(tool, destId, qty){
   try {
     const idsToMove=(tool.ids||[tool.id]).slice(0,qty);
     const {error}=await sb.from('herramientas')
-      .update({equipo:destId||'',
-               actualizado_por:session.nombre,
-               ultima_actualizacion:new Date().toISOString()})
+      .update({equipo:destId||'', actualizado_por:session.nombre, ultima_actualizacion:new Date().toISOString()})
       .in('id',idsToMove);
     if(error) throw error;
     await loadAll();
@@ -654,7 +472,7 @@ function openQtyDialog(tool,destId){
   window._qtyVal=1; window._qtyMax=max;
   showModal(`
     <h3>¿CUÁNTAS UNIDADES?</h3>
-    <div class="qty-info">${tool.icon} <strong>${tool.name}</strong><br>Destino: <span class="dest">${dest}</span></div>
+    <div class="qty-info">🔧 <strong>${tool.name}</strong><br>Destino: <span class="dest">${dest}</span></div>
     <div class="qty-controls">
       <button class="qty-btn" onclick="qtyStep(-1)">−</button>
       <div class="qty-display" id="qty-d">1</div>
@@ -696,20 +514,16 @@ function openAddTool(){
       <button class="btn-confirm" onclick="confirmAddTool()">AGREGAR</button>
     </div>`);
 }
+
 async function confirmAddTool(){
   const name=document.getElementById('m-name').value.trim();
-  const icon = TOOL_IMAGES[name] ? name : '🔧';
+  if(!name){ showModalError('El nombre es obligatorio'); return; }
   const qty=parseInt(document.getElementById('m-qty').value)||1;
   const estado=document.getElementById('m-estado').value;
   const equipo=document.getElementById('m-equipo').value||'';
-  if(!name) return;
   closeModal(); setSyncStatus('loading','GUARDANDO...');
   try {
-    const rows=Array.from({length:qty},()=>({
-      nombre:name, codigo:icon, equipo, estado,
-      actualizado_por:session.nombre,
-      ultima_actualizacion:new Date().toISOString()
-    }));
+    const rows=Array.from({length:qty},()=>({ nombre:name, equipo, estado, actualizado_por:session.nombre, ultima_actualizacion:new Date().toISOString() }));
     const {error}=await sb.from('herramientas').insert(rows);
     if(error) throw error;
     await loadAll(); setStatus(name.toUpperCase()+' (×'+qty+') AGREGADO');
@@ -725,9 +539,7 @@ function openEditTool(tool){
     <label>CANTIDAD</label>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
       <button class="qty-btn" onclick="editQtyStep(-1)" style="flex-shrink:0;">−</button>
-      <div style="flex:1;text-align:center;">
-        <div class="qty-display" id="edit-qty-d" style="font-size:24px;">${tool.qty}</div>
-      </div>
+      <div style="flex:1;text-align:center;"><div class="qty-display" id="edit-qty-d" style="font-size:24px;">${tool.qty}</div></div>
       <button class="qty-btn" onclick="editQtyStep(1)" style="flex-shrink:0;">+</button>
       <div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;">UNIDADES</div>
     </div>
@@ -750,40 +562,25 @@ function editQtyStep(d){
 async function confirmEditTool(){
   const tool=state._pendingTool; if(!tool) return;
   const name=document.getElementById('m-name').value.trim()||tool.name;
-  const icon = TOOL_IMAGES[name] ? name : (tool.icon||'🔧');
   const estado=document.getElementById('m-estado').value;
-  const newQty = window._editQty || tool.qty;
-  const oldQty = tool.qty;
+  const newQty=window._editQty||tool.qty;
+  const oldQty=tool.qty;
   closeModal(); setSyncStatus('loading','GUARDANDO...');
   try {
     const {error}=await sb.from('herramientas')
-      .update({nombre:name, codigo:icon, estado,
-               actualizado_por:session.nombre,
-               ultima_actualizacion:new Date().toISOString()})
+      .update({nombre:name, estado, actualizado_por:session.nombre, ultima_actualizacion:new Date().toISOString()})
       .in('id',tool.ids||[tool.id]);
     if(error) throw error;
-
-    if(newQty > oldQty){
-      const extra = newQty - oldQty;
-      const rows = Array.from({length:extra},()=>({
-        nombre:name, codigo:icon,
-        equipo:tool.containerId||'',
-        estado,
-        actualizado_por:session.nombre,
-        ultima_actualizacion:new Date().toISOString()
-      }));
+    if(newQty>oldQty){
+      const rows=Array.from({length:newQty-oldQty},()=>({ nombre:name, equipo:tool.containerId||'', estado, actualizado_por:session.nombre, ultima_actualizacion:new Date().toISOString() }));
       const {error:e2}=await sb.from('herramientas').insert(rows);
       if(e2) throw e2;
     }
-
-    if(newQty < oldQty){
-      const toDelete = (tool.ids||[tool.id]).slice(newQty);
-      const {error:e3}=await sb.from('herramientas').delete().in('id',toDelete);
+    if(newQty<oldQty){
+      const {error:e3}=await sb.from('herramientas').delete().in('id',(tool.ids||[tool.id]).slice(newQty));
       if(e3) throw e3;
     }
-
-    await loadAll();
-    setStatus(name.toUpperCase()+' ACTUALIZADO · CANTIDAD: ×'+newQty);
+    await loadAll(); setStatus(name.toUpperCase()+' ACTUALIZADO · CANTIDAD: ×'+newQty);
   } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
 }
 
@@ -809,19 +606,15 @@ function openAddContainer(){
       <button class="btn-confirm" onclick="confirmAddContainer()">CREAR</button>
     </div>`);
 }
+
 async function confirmAddContainer(){
   const team=document.getElementById('m-team').value.trim();
   const loc=document.getElementById('m-loc').value.trim();
-  if(!team||!loc) return;
+  if(!team||!loc){ showModalError('Completá todos los campos'); return; }
   closeModal(); setSyncStatus('loading','CREANDO...');
   try {
-    const {error}=await sb.from('herramientas').insert([{
-      nombre:'(contenedor vacío)', codigo:'📦',
-      equipo:team, ubicacion:loc,
-      estado:'Disponible', es_placeholder:true,
-      actualizado_por:session.nombre,
-      ultima_actualizacion:new Date().toISOString()
-    }]);
+    const nextOrden = state.containers.length + 1;
+    const {error}=await sb.from('contenedores').insert([{ nombre:team, ubicacion:loc, orden:nextOrden }]);
     if(error) throw error;
     await loadAll(); setStatus('CONTENEDOR "'+team.toUpperCase()+'" CREADO');
   } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
@@ -841,18 +634,25 @@ function openEditContainer(id){
       <button class="btn-confirm" onclick="confirmEditContainer()">GUARDAR</button>
     </div>`);
 }
+
 async function confirmEditContainer(){
   const c=state._pendingContainer; if(!c) return;
-  const team=document.getElementById('m-team').value.trim()||c.team;
-  const loc=document.getElementById('m-loc').value.trim()||c.location;
+  const team=document.getElementById('m-team').value.trim();
+  const loc=document.getElementById('m-loc').value.trim();
+  if(!team||!loc){ showModalError('Completá todos los campos'); return; }
   closeModal(); setSyncStatus('loading','GUARDANDO...');
   try {
-    const {error}=await sb.from('herramientas')
-      .update({equipo:team, ubicacion:loc,
-               actualizado_por:session.nombre,
-               ultima_actualizacion:new Date().toISOString()})
-      .eq('equipo',c.id);
-    if(error) throw error;
+    // Actualizar nombre en contenedores
+    const {error:e1}=await sb.from('contenedores').update({nombre:team, ubicacion:loc}).eq('id',c.dbId);
+    if(e1) throw e1;
+    // Actualizar equipo en herramientas si cambió el nombre
+    if(team !== c.team){
+      const {error:e2}=await sb.from('herramientas').update({equipo:team}).eq('equipo',c.id);
+      if(e2) throw e2;
+      // Actualizar equipo en usuarios
+      const {error:e3}=await sb.from('usuarios').update({equipo:team}).eq('equipo',c.id);
+      if(e3) throw e3;
+    }
     await loadAll(); setStatus('CONTENEDOR ACTUALIZADO');
   } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
 }
@@ -861,31 +661,15 @@ async function confirmDeleteContainer(){
   const c=state._pendingContainer; if(!c) return;
   closeModal(); setSyncStatus('loading','ELIMINANDO...');
   try {
-    // Mover herramientas reales a bodega
+    // Mover herramientas a bodega
     const {error:e1}=await sb.from('herramientas')
-      .update({equipo:'',
-               actualizado_por:session.nombre,
-               ultima_actualizacion:new Date().toISOString()})
-      .eq('equipo',c.id)
-      .eq('es_placeholder',false);
+      .update({equipo:'', actualizado_por:session.nombre, ultima_actualizacion:new Date().toISOString()})
+      .eq('equipo',c.id);
     if(e1) throw e1;
-
-    // Eliminar el placeholder
-    const {error:e2}=await sb.from('herramientas')
-      .delete()
-      .eq('equipo',c.id)
-      .eq('es_placeholder',true);
+    // Eliminar contenedor
+    const {error:e2}=await sb.from('contenedores').delete().eq('id',c.dbId);
     if(e2) throw e2;
-
-    // Eliminar el registro de usuario/equipo
-    const {error:e3}=await sb.from('usuarios')
-      .delete()
-      .eq('equipo',c.id)
-      .eq('rol','equipo');
-    if(e3) throw e3;
-
-    await loadAll();
-    setStatus('CONTENEDOR "'+c.team.toUpperCase()+'" ELIMINADO · HERRAMIENTAS ENVIADAS A BODEGA');
+    await loadAll(); setStatus('CONTENEDOR "'+c.team.toUpperCase()+'" ELIMINADO · HERRAMIENTAS ENVIADAS A BODEGA');
   } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
 }
 
@@ -901,6 +685,11 @@ function setStatus(msg){ document.getElementById('status-bar').textContent=msg.t
 function showModal(html){ document.getElementById('modal-root').innerHTML=`<div class="modal-overlay"><div class="modal">${html}</div></div>`; }
 function closeModal(){ document.getElementById('modal-root').innerHTML=''; }
 function closeDrawer(){ document.getElementById('action-drawer')?.classList.remove('open'); }
+function showModalError(msg){
+  let err=document.getElementById('modal-error');
+  if(!err){ err=document.createElement('div'); err.id='modal-error'; err.className='modal-error'; document.querySelector('.modal').appendChild(err); }
+  err.textContent=msg;
+}
 
 sb = supabase.createClient(URL_, KEY_);
 </script>
