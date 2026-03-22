@@ -155,7 +155,6 @@ img{max-width:100%;height:auto;}
   border-color:var(--stripe);border-top-color:var(--stripe);
   box-shadow:0 0 16px #f5c51822;
 }
-/* El contenedor que se está arrastrando */
 .container-box.is-dragging{
   opacity:0.35;
   transform:scale(0.96) rotate(-1deg);
@@ -163,14 +162,12 @@ img{max-width:100%;height:auto;}
   border-style:dashed;
   box-shadow:0 0 0 2px var(--stripe);
 }
-/* El contenedor sobre el que se está sobrevolando */
 .container-box.drop-target{
   border-color:var(--stripe);
   border-style:dashed;
   box-shadow:0 0 24px #f5c51840;
   transform:scale(1.02);
 }
-/* Header arrastrable */
 .container-header{
   padding:10px 12px 8px;
   border-bottom:1px solid var(--container-border);
@@ -188,7 +185,6 @@ img{max-width:100%;height:auto;}
 .container-header.draggable-header:active{
   cursor:grabbing;
 }
-/* Indicador de arrastre en el header */
 .drag-indicator{
   position:absolute;
   top:0;left:0;right:0;
@@ -318,13 +314,10 @@ img{max-width:100%;height:auto;}
         <button class="rpg-btn" onclick="openAddTool()">+ HERRAMIENTA</button>
         <button class="rpg-btn rpg-btn-dim" onclick="openAddContainer()">+ CONTENEDOR</button>
       </div>
-      
       <button class="rpg-btn rpg-btn-dim" onclick="doLogout()" id="btn-logout">SALIR</button>
-      
     </div>
     <div id="action-drawer">
       <div class="drawer-inner" id="drawer-inner">
-        
         <button class="rpg-btn rpg-btn-dim" onclick="doLogout()">SALIR</button>
       </div>
     </div>
@@ -355,7 +348,6 @@ const URL_ = 'https://viplezgsehdysopzcquq.supabase.co';
 const KEY_ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpcGxlemdzZWhkeXNvcHpjcXVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzQ2MTcsImV4cCI6MjA4OTYxMDYxN30.YIe_mw2dncLQGJTyatCi9i3O7lEJZlztqT9lQxILZHM';
 const ICONS = ['🔧','🔨','⚒️','🪛','🪚','🔩','🪝','⚙️','🔌','💡','📐','📏','🧲','🪜','🧰','⛏️','🪤','🔗','🗜️','🔑'];
 
-// Herramientas con imagen real — el nombre debe coincidir exactamente con el de Supabase
 const TOOL_IMAGES = {
   'Martillo':  'herramientas/martillo.png',
   'Taladro':   'herramientas/taladro.png',
@@ -420,7 +412,6 @@ function doLogout(){
   state = { containers:[], tools:[], draggingTool:null, draggingContainerId:null };
 }
 
-
 function showLoginError(msg){ document.getElementById('login-error').textContent = msg; }
 document.addEventListener('keydown', e => {
   if(e.key==='Enter' && document.getElementById('login-screen').style.display!=='none') doLogin();
@@ -448,7 +439,7 @@ async function loadAll(){
     const raw = (herr||[]).filter(h=>!h.es_placeholder).map(h=>({
       id:h.id, name:h.nombre, icon:h.codigo||'🔧',
       qty:1, estado:h.estado, containerId:h.equipo||null,
-      ubicacion:h.ubicacion, ids:[h.id]
+      ids:[h.id]
     }));
     const grouped = [];
     raw.forEach(t=>{
@@ -577,17 +568,14 @@ function setupContainerDrag(div, containerId){
   const header = div.querySelector('.container-header');
   if(!header) return;
 
-  // Hacer el header entero arrastrable
   header.draggable = true;
 
   header.addEventListener('dragstart', e=>{
-    // Evitar que se confunda con drag de herramientas
     e.stopPropagation();
     state.draggingContainerId = containerId;
     state.draggingTool = null;
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('dragtype','container');
-    // Animación: aplicar clase después de un tick para que el browser capture el snapshot primero
     setTimeout(()=>{ div.classList.add('is-dragging'); }, 0);
     setStatus('REORDENANDO CONTENEDOR: '+containerId.toUpperCase()+' — SOLTÁ SOBRE OTRO CONTENEDOR');
   });
@@ -599,7 +587,6 @@ function setupContainerDrag(div, containerId){
     setStatus('LISTO');
   });
 
-  // El contenedor entero recibe el drop de otros contenedores
   div.addEventListener('dragover', e=>{
     if(!state.draggingContainerId || state.draggingContainerId===containerId) return;
     e.preventDefault(); e.stopPropagation();
@@ -650,10 +637,10 @@ async function doMove(tool, destId, qty){
   setSyncStatus('loading','GUARDANDO...');
   try {
     const idsToMove=(tool.ids||[tool.id]).slice(0,qty);
-    const destLoc = destId?(state.containers.find(c=>c.id===destId)?.location||destId):'Bodega';
     const {error}=await sb.from('herramientas')
-      .update({equipo:destId||'',ubicacion:destLoc,
-               actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()})
+      .update({equipo:destId||'',
+               actualizado_por:session.nombre,
+               ultima_actualizacion:new Date().toISOString()})
       .in('id',idsToMove);
     if(error) throw error;
     await loadAll();
@@ -696,7 +683,6 @@ function openAddTool(){
   showModal(`
     <h3>+ NUEVA HERRAMIENTA</h3>
     <label>NOMBRE</label><input id="m-name" placeholder="ej: Taladro Bosch">
-
     <label>CANTIDAD</label><input id="m-qty" type="number" value="1" min="1">
     <label>ESTADO</label>
     <select id="m-estado"><option>Disponible</option><option>En uso</option><option>Mantenimiento</option><option>Perdida</option></select>
@@ -705,15 +691,10 @@ function openAddTool(){
       <option value="">— Sin asignar (Bodega) —</option>
       ${state.containers.map(c=>`<option value="${c.id}">${c.team}</option>`).join('')}
     </select>
-    <label>UBICACIÓN</label><input id="m-ubic" placeholder="ej: Depósito 2">
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">CANCELAR</button>
       <button class="btn-confirm" onclick="confirmAddTool()">AGREGAR</button>
     </div>`);
-}
-function selIcon(el,icon){
-  document.querySelectorAll('.icon-opt').forEach(e=>e.classList.remove('selected'));
-  el.classList.add('selected'); document.getElementById('m-icon').value=icon;
 }
 async function confirmAddTool(){
   const name=document.getElementById('m-name').value.trim();
@@ -721,23 +702,26 @@ async function confirmAddTool(){
   const qty=parseInt(document.getElementById('m-qty').value)||1;
   const estado=document.getElementById('m-estado').value;
   const equipo=document.getElementById('m-equipo').value||'';
-  const ubic=document.getElementById('m-ubic').value.trim()||equipo||'Sin ubicación';
   if(!name) return;
   closeModal(); setSyncStatus('loading','GUARDANDO...');
   try {
-    const rows=Array.from({length:qty},()=>({nombre:name,codigo:icon,equipo,ubicacion:ubic,estado,actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()}));
+    const rows=Array.from({length:qty},()=>({
+      nombre:name, codigo:icon, equipo, estado,
+      actualizado_por:session.nombre,
+      ultima_actualizacion:new Date().toISOString()
+    }));
     const {error}=await sb.from('herramientas').insert(rows);
     if(error) throw error;
     await loadAll(); setStatus(name.toUpperCase()+' (×'+qty+') AGREGADO');
   } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
 }
+
 function openEditTool(tool){
   if(!isCoord()) return;
   state._pendingTool=tool;
   showModal(`
     <h3>EDITAR HERRAMIENTA</h3>
     <label>NOMBRE</label><input id="m-name" value="${tool.name}">
-
     <label>CANTIDAD</label>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
       <button class="qty-btn" onclick="editQtyStep(-1)" style="flex-shrink:0;">−</button>
@@ -749,7 +733,6 @@ function openEditTool(tool){
     </div>
     <label>ESTADO</label>
     <select id="m-estado">${['Disponible','En uso','Mantenimiento','Perdida'].map(s=>`<option${s===tool.estado?' selected':''}>${s}</option>`).join('')}</select>
-    <label>UBICACIÓN</label><input id="m-ubic" value="${tool.ubicacion||''}">
     <div class="modal-btns">
       <button class="btn-danger" onclick="confirmDeleteTool()">ELIMINAR</button>
       <button class="btn-cancel" onclick="closeModal()">CANCELAR</button>
@@ -769,32 +752,30 @@ async function confirmEditTool(){
   const name=document.getElementById('m-name').value.trim()||tool.name;
   const icon = TOOL_IMAGES[name] ? name : (tool.icon||'🔧');
   const estado=document.getElementById('m-estado').value;
-  const ubic=document.getElementById('m-ubic').value.trim();
   const newQty = window._editQty || tool.qty;
   const oldQty = tool.qty;
   closeModal(); setSyncStatus('loading','GUARDANDO...');
   try {
-    // 1. Actualizar los campos de todas las filas existentes
     const {error}=await sb.from('herramientas')
-      .update({nombre:name,codigo:icon,estado,ubicacion:ubic,
-               actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()})
+      .update({nombre:name, codigo:icon, estado,
+               actualizado_por:session.nombre,
+               ultima_actualizacion:new Date().toISOString()})
       .in('id',tool.ids||[tool.id]);
     if(error) throw error;
 
-    // 2. Si aumentó la cantidad, agregar filas nuevas
     if(newQty > oldQty){
       const extra = newQty - oldQty;
       const rows = Array.from({length:extra},()=>({
         nombre:name, codigo:icon,
-        equipo:tool.containerId||'', ubicacion:ubic,
-        estado, actualizado_por:session.nombre,
+        equipo:tool.containerId||'',
+        estado,
+        actualizado_por:session.nombre,
         ultima_actualizacion:new Date().toISOString()
       }));
       const {error:e2}=await sb.from('herramientas').insert(rows);
       if(e2) throw e2;
     }
 
-    // 3. Si disminuyó, eliminar las filas sobrantes
     if(newQty < oldQty){
       const toDelete = (tool.ids||[tool.id]).slice(newQty);
       const {error:e3}=await sb.from('herramientas').delete().in('id',toDelete);
@@ -805,6 +786,7 @@ async function confirmEditTool(){
     setStatus(name.toUpperCase()+' ACTUALIZADO · CANTIDAD: ×'+newQty);
   } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
 }
+
 async function confirmDeleteTool(){
   const tool=state._pendingTool; if(!tool) return;
   closeModal(); setSyncStatus('loading','ELIMINANDO...');
@@ -833,11 +815,18 @@ async function confirmAddContainer(){
   if(!team||!loc) return;
   closeModal(); setSyncStatus('loading','CREANDO...');
   try {
-    const {error}=await sb.from('herramientas').insert([{nombre:'(contenedor vacío)',codigo:'📦',equipo:team,ubicacion:loc,estado:'Disponible',es_placeholder: true,actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()}]);
+    const {error}=await sb.from('herramientas').insert([{
+      nombre:'(contenedor vacío)', codigo:'📦',
+      equipo:team, ubicacion:loc,
+      estado:'Disponible', es_placeholder:true,
+      actualizado_por:session.nombre,
+      ultima_actualizacion:new Date().toISOString()
+    }]);
     if(error) throw error;
     await loadAll(); setStatus('CONTENEDOR "'+team.toUpperCase()+'" CREADO');
   } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
 }
+
 function openEditContainer(id){
   if(!isCoord()) return;
   const c=state.containers.find(x=>x.id===id); if(!c) return;
@@ -858,7 +847,11 @@ async function confirmEditContainer(){
   const loc=document.getElementById('m-loc').value.trim()||c.location;
   closeModal(); setSyncStatus('loading','GUARDANDO...');
   try {
-    const {error}=await sb.from('herramientas').update({equipo:team,ubicacion:loc,actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()}).eq('equipo',c.id);
+    const {error}=await sb.from('herramientas')
+      .update({equipo:team, ubicacion:loc,
+               actualizado_por:session.nombre,
+               ultima_actualizacion:new Date().toISOString()})
+      .eq('equipo',c.id);
     if(error) throw error;
     await loadAll(); setStatus('CONTENEDOR ACTUALIZADO');
   } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
@@ -868,9 +861,31 @@ async function confirmDeleteContainer(){
   const c=state._pendingContainer; if(!c) return;
   closeModal(); setSyncStatus('loading','ELIMINANDO...');
   try {
-    const {error}=await sb.from('herramientas').delete().eq('equipo',c.id);
-    if(error) throw error;
-    await loadAll(); setStatus('CONTENEDOR "'+c.team.toUpperCase()+'" ELIMINADO');
+    // Mover herramientas reales a bodega
+    const {error:e1}=await sb.from('herramientas')
+      .update({equipo:'',
+               actualizado_por:session.nombre,
+               ultima_actualizacion:new Date().toISOString()})
+      .eq('equipo',c.id)
+      .eq('es_placeholder',false);
+    if(e1) throw e1;
+
+    // Eliminar el placeholder
+    const {error:e2}=await sb.from('herramientas')
+      .delete()
+      .eq('equipo',c.id)
+      .eq('es_placeholder',true);
+    if(e2) throw e2;
+
+    // Eliminar el registro de usuario/equipo
+    const {error:e3}=await sb.from('usuarios')
+      .delete()
+      .eq('equipo',c.id)
+      .eq('rol','equipo');
+    if(e3) throw e3;
+
+    await loadAll();
+    setStatus('CONTENEDOR "'+c.team.toUpperCase()+'" ELIMINADO · HERRAMIENTAS ENVIADAS A BODEGA');
   } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
 }
 
@@ -885,6 +900,7 @@ function setSyncStatus(type,txt){
 function setStatus(msg){ document.getElementById('status-bar').textContent=msg.toUpperCase(); }
 function showModal(html){ document.getElementById('modal-root').innerHTML=`<div class="modal-overlay"><div class="modal">${html}</div></div>`; }
 function closeModal(){ document.getElementById('modal-root').innerHTML=''; }
+function closeDrawer(){ document.getElementById('action-drawer')?.classList.remove('open'); }
 
 sb = supabase.createClient(URL_, KEY_);
 </script>
