@@ -445,7 +445,7 @@ async function loadAll(){
       location:(herr||[]).find(h=>h.equipo===eq)?.ubicacion||''
     }));
 
-    const raw = (herr||[]).map(h=>({
+    const raw = (herr||[]).filter(h=>h.nombre!=='(contenedor vacío)').map(h=>({
       id:h.id, name:h.nombre, icon:h.codigo||'🔧',
       qty:1, estado:h.estado, containerId:h.equipo||null,
       ubicacion:h.ubicacion, ids:[h.id]
