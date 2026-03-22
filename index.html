@@ -445,7 +445,7 @@ async function loadAll(){
       location:(herr||[]).find(h=>h.equipo===eq)?.ubicacion||''
     }));
 
-    const raw = (herr||[]).filter(h=>h.nombre!=='(contenedor vacío)').map(h=>({
+    const raw = (herr||[]).filter(h=>!h.es_placeholder).map(h=>({
       id:h.id, name:h.nombre, icon:h.codigo||'🔧',
       qty:1, estado:h.estado, containerId:h.equipo||null,
       ubicacion:h.ubicacion, ids:[h.id]
@@ -833,7 +833,7 @@ async function confirmAddContainer(){
   if(!team||!loc) return;
   closeModal(); setSyncStatus('loading','CREANDO...');
   try {
-    const {error}=await sb.from('herramientas').insert([{nombre:'(contenedor vacío)',codigo:'📦',equipo:team,ubicacion:loc,estado:'Disponible',actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()}]);
+    const {error}=await sb.from('herramientas').insert([{nombre:'(contenedor vacío)',codigo:'📦',equipo:team,ubicacion:loc,estado:'Disponible',es_placeholder: true,actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()}]);
     if(error) throw error;
     await loadAll(); setStatus('CONTENEDOR "'+team.toUpperCase()+'" CREADO');
   } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
