@@ -437,7 +437,7 @@ async function loadAll(){
     }));
 
     const raw = (herr||[]).filter(h=>!h.es_placeholder).map(h=>({
-      id:h.id, name:h.nombre, icon:h.codigo||'🔧',
+      id:h.id, name:h.nombre, icon:'🔧',
       qty:1, estado:h.estado, containerId:h.equipo||null,
       ids:[h.id]
     }));
