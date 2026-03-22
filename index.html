@@ -847,6 +847,7 @@ function openEditContainer(id){
     <label>EQUIPO</label><input id="m-team" value="${c.team}">
     <label>UBICACIÓN</label><input id="m-loc" value="${c.location}">
     <div class="modal-btns">
+      <button class="btn-danger" onclick="confirmDeleteContainer()">ELIMINAR</button>
       <button class="btn-cancel" onclick="closeModal()">CANCELAR</button>
       <button class="btn-confirm" onclick="confirmEditContainer()">GUARDAR</button>
     </div>`);
@@ -860,6 +861,16 @@ async function confirmEditContainer(){
     const {error}=await sb.from('herramientas').update({equipo:team,ubicacion:loc,actualizado_por:session.nombre,ultima_actualizacion:new Date().toISOString()}).eq('equipo',c.id);
     if(error) throw error;
     await loadAll(); setStatus('CONTENEDOR ACTUALIZADO');
+  } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
+}
+
+async function confirmDeleteContainer(){
+  const c=state._pendingContainer; if(!c) return;
+  closeModal(); setSyncStatus('loading','ELIMINANDO...');
+  try {
+    const {error}=await sb.from('herramientas').delete().eq('equipo',c.id);
+    if(error) throw error;
+    await loadAll(); setStatus('CONTENEDOR "'+c.team.toUpperCase()+'" ELIMINADO');
   } catch(e){ setSyncStatus('err','ERROR'); setStatus('ERROR: '+e.message); }
 }
 
