@@ -321,8 +321,8 @@ async function loadAll(){
 function render(){ renderContainers(); renderTray(); }
 function isCoord(){ return session?.rol==='coordinador'; }
 function myTeam(){ return session?.equipo||''; }
-function canDrag(tool){ return isCoord() || tool.containerId===myTeam() || !tool.containerId; }
-function canDropTo(cid){ return isCoord() || cid===myTeam() || cid===null; }
+function canDrag(tool){ return true; }
+function canDropTo(cid){ return true; }
 
 function renderContainers(){
   const area = document.getElementById('containers-area');
